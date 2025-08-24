@@ -1,0 +1,5 @@
+{
+  "name": "Veo Storyboard Prompt Generator",
+  "description": "A web app to create consistent video storyboard prompts for the Veo model, outputting a copy/download-ready JSON. It features a consistency engine for characters/locations, strict validation, and a scene builder.",
+  "requestFramePermissions": []
+}
