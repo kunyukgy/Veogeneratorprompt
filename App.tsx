@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, useWatch, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StoryboardSchema, storyboardSchema, initialData } from './types';
 import useAutosave from './hooks/useAutosave';
@@ -37,7 +37,7 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const form = useForm<StoryboardSchema>({
-    resolver: zodResolver(storyboardSchema),
+    resolver: zodResolver(storyboardSchema) as Resolver<StoryboardSchema>,
     defaultValues: getInitialValues(),
     mode: 'onChange',
   });

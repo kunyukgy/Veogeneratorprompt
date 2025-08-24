@@ -29,7 +29,7 @@ const shotSchema = z.object({
 });
 
 const dialogSchema = z.object({
-  character_id: z.string().min(1, "Character ID is required"),
+  character_id: z.string(), // Allow empty string on character deletion
   mode: z.enum(['dialog', 'vo']),
   line: z.string().min(1, "Dialog line is required"),
 });
@@ -38,7 +38,7 @@ const sceneSchema = z.object({
   id: z.string().readonly(),
   title: z.string().optional(),
   duration_sec: z.number().min(0, "Duration must be positive"),
-  location_id: z.string().min(1, "Location is required"),
+  location_id: z.string(), // Allow empty string on location deletion
   ratio: z.string(), // Validation is handled at the top level
   shots: z.array(shotSchema).min(1, "At least one shot is required per scene"),
   dialog: z.array(dialogSchema).min(1, "At least one dialog/VO line is required per scene"),
@@ -95,7 +95,8 @@ export const storyboardSchema = z.object({
   const locationIds = new Set(data.locations.map(l => l.id));
 
   data.scenes.forEach((scene, sceneIndex) => {
-    if (!locationIds.has(scene.location_id)) {
+    // Only validate if an ID is actually provided.
+    if (scene.location_id && !locationIds.has(scene.location_id)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: [`scenes.${sceneIndex}.location_id`],
@@ -103,7 +104,8 @@ export const storyboardSchema = z.object({
       });
     }
     scene.dialog.forEach((d, dialogIndex) => {
-      if (!characterIds.has(d.character_id)) {
+      // Only validate if an ID is actually provided.
+      if (d.character_id && !characterIds.has(d.character_id)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: [`scenes.${sceneIndex}.dialog.${dialogIndex}.character_id`],
@@ -140,7 +142,6 @@ export const initialData: StoryboardSchema = {
   ],
   locations: [
     { id: 'l1', name: 'Bedroom', lighting: 'Natural morning light through a window.', notes: 'Clean, minimalist style bedroom.' },
-    { id: 'l2', name: 'Sidewalk Cafe', lighting: 'Golden hour, late afternoon.', notes: 'Busy urban sidewalk with cafe seating.' },
   ],
   brand_assets: ['Product bottle with blue label'],
   aida: {
@@ -168,7 +169,7 @@ export const initialData: StoryboardSchema = {
       id: 's2',
       title: 'The Result',
       duration_sec: 8,
-      location_id: 'l2',
+      location_id: 'l1',
       ratio: 'inherit',
       use_vo: false,
       shots: [
